@@ -7,7 +7,6 @@ from internal.receiver_sender import Category, ReceiverOrSender, Payment
 
 def eval_data(input_file, receivers):
     input_data = []
-    results = {}
     with open(input_file, encoding="latin1") as f_input:
         csv_reader = csv.DictReader(f_input, delimiter=";", quotechar='"')
         for line in csv_reader:
@@ -26,6 +25,8 @@ def eval_data(input_file, receivers):
             if receiver.does_payment_match(payment):
                 receiver.add_payment(payment)
                 break
+        else:
+            print(f"Unmatched payment {payment}")
 
     for element in parsed_receivers:
         print(element)
@@ -35,9 +36,15 @@ def create_tree(receiver_list, category=None):
     result = []
     for entry in receiver_list:
         if type(entry) == str:
-            result.append(ReceiverOrSender(name=entry, category=category))
+            receiver_or_sender = ReceiverOrSender(name=entry, category=category)
+            result.append(receiver_or_sender)
+            if category is not None:
+                category.add_child(receiver_or_sender)
         elif type(entry) == dict:
-            result.extend(create_tree(receiver_list=list(entry.values())[0], category=Category(list(entry.keys())[0], parent=category)))
+            new_category = Category(list(entry.keys())[0], parent=category)
+            result.extend(create_tree(receiver_list=list(entry.values())[0], category=new_category))
+            if category is not None:
+                category.add_child(new_category)
     return result
 
 

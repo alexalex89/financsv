@@ -3,12 +3,19 @@ class Category(object):
     def __init__(self, name, parent=None):
         self._name = name
         self._parent = parent
+        self._children = []
 
     def get_name(self):
         return self._name
 
+    def add_child(self, child):
+        self._children.append(child)
+
+    def get_sum(self):
+        return sum(rs.get_sum() for rs in self._children)
+
     def __str__(self):
-        return f"Category: {self._name}, Parent: {self._parent}"
+        return f"Category: {self._name}, Sum: {self.get_sum()}, Parent: {self._parent}, Children: {self._children}"
 
     def __repr__(self):
         return str(self)
