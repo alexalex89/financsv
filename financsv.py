@@ -2,6 +2,8 @@ import csv
 import optparse
 import yaml
 
+from itertools import groupby
+from collections import Counter
 from typing import List
 from internal.receiver_sender import Category, ReceiverOrSender, Payment
 
@@ -15,6 +17,7 @@ def eval_payments(input_filename: str, receivers_filename: str) -> List[Receiver
         fieldnames = ["_", "_", "date", "_", "usage", "receiver_or_sender_name", "_", "_", "amount", "_", "_"]
         csv_reader = csv.DictReader(f_input, fieldnames=fieldnames, delimiter=";", quotechar='"')
         next(csv_reader)
+        unmatched = []
 
         for line in csv_reader:
             # Remove unused column(s)
@@ -26,7 +29,10 @@ def eval_payments(input_filename: str, receivers_filename: str) -> List[Receiver
                     receiver.payments.append(payment)
                     break
             else:
-                print(f"Unmatched payment {payment}")
+                unmatched.append(payment.receiver_or_sender_name)
+                """if payment.receiver_or_sender_name == "":
+                    print(f"Unmatched payment from/to {payment.receiver_or_sender_name}, {payment.usage}")"""
+        print(f"Unmatched (Total {len(unmatched)}): {Counter(unmatched).most_common()}")
 
     return parsed_receivers
 
@@ -47,8 +53,11 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
     parser.add_option("-i", "--input", dest="input", help="Path to CSV file from the bank containing payment data", type="string")
     parser.add_option("-r", "--receivers", dest="receivers", help=".yml file containing grouping of receivers", type="string")
+    parser.add_option("-o", "--only-outgoing", dest="only_outgoing", help="Only consider outgoing payments for overview", default=False, action="store_true")
 
     options, _ = parser.parse_args()
 
-    for element in eval_payments(input_filename=options.input, receivers_filename=options.receivers):
-        print(element)
+    result = eval_payments(input_filename=options.input, receivers_filename=options.receivers)
+
+    for element in groupby(result, lambda x: x.category):
+        print(f"{element[0]}, Sum: {sum(subel.get_sum(only_outgoing=options.only_outgoing) for subel in element[1]):.2f}")
