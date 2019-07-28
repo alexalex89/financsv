@@ -23,7 +23,7 @@ def eval_data(input_file, receivers):
         payment = Payment(**line)
         for receiver in parsed_receivers:
             if receiver.does_payment_match(payment):
-                receiver.add_payment(payment)
+                receiver.payments.append(payment)
                 break
         else:
             print(f"Unmatched payment {payment}")
@@ -38,13 +38,9 @@ def create_tree(receiver_list: list, category=None):
         if type(entry) == str:
             receiver_or_sender = ReceiverOrSender(name=entry, category=category)
             result.append(receiver_or_sender)
-            if category is not None:
-                category.add_child(receiver_or_sender)
         elif type(entry) == dict:
             new_category = Category(list(entry.keys())[0], parent=category)
             result.extend(create_tree(receiver_list=list(entry.values())[0], category=new_category))
-            if category is not None:
-                category.add_child(new_category)
     return result
 
 
