@@ -17,14 +17,14 @@ class Payment(object):
 
     receiver_or_sender_name: str
     date: str
-    cause: str
+    usage: str
     amount: float
 
     def __post_init__(self):
         self.amount = float(self.amount.replace(",", "."))
 
     def __str__(self):
-        return f"ReceiverOrSenderName: {self.receiver_or_sender_name}, Date: {self.date}, Cause: {self.cause}, Amount: {self.amount}"
+        return f"ReceiverOrSenderName: {self.receiver_or_sender_name}, Date: {self.date}, Usage: {self.usage}, Amount: {self.amount}"
 
 
 @dataclass

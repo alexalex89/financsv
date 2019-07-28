@@ -6,31 +6,29 @@ from typing import List
 from internal.receiver_sender import Category, ReceiverOrSender, Payment
 
 
-def eval_payments(input_filename: str, receivers_filename: str) -> None:
-    input_data = []
-    with open(input_filename, encoding="latin1") as f_input:
-        csv_reader = csv.DictReader(f_input, delimiter=";", quotechar='"')
-        for line in csv_reader:
-            input_data.append({"date": line["Valutadatum"],
-                         "receiver_or_sender_name": line["Beguenstigter/Zahlungspflichtiger"],
-                         "cause": line["Verwendungszweck"],
-                         "amount": line["Betrag"]})
-
+def eval_payments(input_filename: str, receivers_filename: str) -> List[ReceiverOrSender]:
     with open(receivers_filename) as f_receivers:
         receivers_data = yaml.safe_load(f_receivers)
-
     parsed_receivers = create_tree(receiver_list=receivers_data)
-    for line in input_data:
-        payment = Payment(**line)
-        for receiver in parsed_receivers:
-            if receiver.does_payment_match(payment):
-                receiver.payments.append(payment)
-                break
-        else:
-            print(f"Unmatched payment {payment}")
 
-    for element in parsed_receivers:
-        print(element)
+    with open(input_filename, encoding="latin1") as f_input:
+        fieldnames = ["_", "_", "date", "_", "usage", "receiver_or_sender_name", "_", "_", "amount", "_", "_"]
+        csv_reader = csv.DictReader(f_input, fieldnames=fieldnames, delimiter=";", quotechar='"')
+        next(csv_reader)
+
+        for line in csv_reader:
+            # Remove unused column(s)
+            line.pop("_")
+
+            payment = Payment(**line)
+            for receiver in parsed_receivers:
+                if receiver.does_payment_match(payment):
+                    receiver.payments.append(payment)
+                    break
+            else:
+                print(f"Unmatched payment {payment}")
+
+    return parsed_receivers
 
 
 def create_tree(receiver_list: list, category: Category = None) -> List[ReceiverOrSender]:
@@ -52,4 +50,5 @@ if __name__ == "__main__":
 
     options, _ = parser.parse_args()
 
-    eval_payments(input_filename=options.input, receivers_filename=options.receivers)
+    for element in eval_payments(input_filename=options.input, receivers_filename=options.receivers):
+        print(element)
