@@ -32,7 +32,7 @@ def eval_data(input_file, receivers):
         print(element)
 
 
-def create_tree(receiver_list, category=None):
+def create_tree(receiver_list: list, category=None):
     result = []
     for entry in receiver_list:
         if type(entry) == str:
