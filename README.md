@@ -9,3 +9,9 @@ Example call:
 Python3.7 or higher required.
 
 Work in progress.
+
+## TODO
+
+* Refactoring
+* Visualization
+* Some kind of AI interpreting the payments
