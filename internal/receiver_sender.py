@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import List
 
 
 @dataclass
@@ -31,14 +32,14 @@ class ReceiverOrSender(object):
 
     name: str
     category: Category
-    payments: list = field(default_factory=list)
+    payments: List[Payment] = field(default_factory=list)
 
-    def does_payment_match(self, payment: Payment):
+    def does_payment_match(self, payment: Payment) -> bool:
         if self.name.lower() in payment.receiver_or_sender_name.lower():
             return True
         return False
 
-    def get_sum(self):
+    def get_sum(self) -> float:
         return sum(p.amount for p in self.payments)
 
     def __str__(self):

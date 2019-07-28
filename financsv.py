@@ -2,12 +2,13 @@ import csv
 import optparse
 import yaml
 
+from typing import List
 from internal.receiver_sender import Category, ReceiverOrSender, Payment
 
 
-def eval_data(input_file, receivers):
+def eval_payments(input_filename: str, receivers_filename: str) -> None:
     input_data = []
-    with open(input_file, encoding="latin1") as f_input:
+    with open(input_filename, encoding="latin1") as f_input:
         csv_reader = csv.DictReader(f_input, delimiter=";", quotechar='"')
         for line in csv_reader:
             input_data.append({"date": line["Valutadatum"],
@@ -15,7 +16,7 @@ def eval_data(input_file, receivers):
                          "cause": line["Verwendungszweck"],
                          "amount": line["Betrag"]})
 
-    with open(receivers) as f_receivers:
+    with open(receivers_filename) as f_receivers:
         receivers_data = yaml.safe_load(f_receivers)
 
     parsed_receivers = create_tree(receiver_list=receivers_data)
@@ -32,7 +33,7 @@ def eval_data(input_file, receivers):
         print(element)
 
 
-def create_tree(receiver_list: list, category=None):
+def create_tree(receiver_list: list, category: Category = None) -> List[ReceiverOrSender]:
     result = []
     for entry in receiver_list:
         if type(entry) == str:
@@ -51,4 +52,4 @@ if __name__ == "__main__":
 
     options, _ = parser.parse_args()
 
-    eval_data(input_file=options.input, receivers=options.receivers)
+    eval_payments(input_filename=options.input, receivers_filename=options.receivers)
