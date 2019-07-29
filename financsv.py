@@ -38,15 +38,20 @@ def eval_payments(input_filename: str, receivers_filename: str) -> List[Receiver
 
 
 def create_tree(receiver_list: list, category: Category = None) -> List[ReceiverOrSender]:
-    result = []
+    receiver_sender_list = []
     for entry in receiver_list:
         if type(entry) == str:
             receiver_or_sender = ReceiverOrSender(name=entry, category=category)
-            result.append(receiver_or_sender)
+            receiver_sender_list.append(receiver_or_sender)
         elif type(entry) == dict:
             new_category = Category(list(entry.keys())[0], parent=category)
-            result.extend(create_tree(receiver_list=list(entry.values())[0], category=new_category))
-    return result
+            receiver_sender_list.extend(create_tree(receiver_list=list(entry.values())[0], category=new_category))
+        elif type(entry) == list:
+            receiver_or_sender = ReceiverOrSender(name=entry[0], category=category)
+            del entry[0]
+            receiver_or_sender.alias = entry
+            receiver_sender_list.append(receiver_or_sender)
+    return receiver_sender_list
 
 
 if __name__ == "__main__":

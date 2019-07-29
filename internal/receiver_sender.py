@@ -43,9 +43,12 @@ class ReceiverOrSender(object):
     name: str
     category: Category
     payments: List[Payment] = field(default_factory=list)
+    alias: List[str] = field(default_factory=list)
 
     def does_payment_match(self, payment: Payment) -> bool:
-        if self.name.lower() in payment.receiver_or_sender_name.lower() or self.name.lower() in payment.usage.lower():
+        if (self.name.lower() in payment.receiver_or_sender_name.lower() or
+                self.name.lower() in payment.usage.lower()
+        or any(alias.lower() in payment.receiver_or_sender_name.lower() for alias in self.alias)):
             return True
         return False
 

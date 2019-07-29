@@ -14,7 +14,7 @@ class FinanCSVTest(unittest.TestCase):
         restaurant = Category(name="FastFood/Restaurant", parent=lebensmittel)
         kleidung = Category(name="Kleidung", parent=lebenshaltung)
 
-        drogeriemann = ReceiverOrSender(name="Drogeriemann", category=drogerie)
+        drogeriemann = ReceiverOrSender(name="Drogeriemann", category=drogerie, alias=["DRM"])
         supermarkt = ReceiverOrSender(name="Ein Supermarkt", category=lebensmittel)
         pizza_venezia = ReceiverOrSender(name="Pizza Venezia", category=restaurant)
         a_b = ReceiverOrSender(name="A&B", category=kleidung)
@@ -28,6 +28,9 @@ class FinanCSVTest(unittest.TestCase):
         payment_drogeriemann = Payment(receiver_or_sender_name="Drogeriemann VIELEN DANK", date="09.07.19",
                 usage="EREF+12345678909877654332342352352356666MREF+2345654467876567654345CRED+DE11ZZZ12345678976SVWZ+123456434512312312312312312 ELV11111111 05.07 16.40 ME2",
                 amount="-9,12")
+        payment_drm = Payment(receiver_or_sender_name="DRM VIELEN DANK", date="09.07.19",
+                                       usage="EREF+12345678909877654332342352352356666MREF+2345654467876567654345CRED+DE11ZZZ12345678976SVWZ+123456434512312312312312312 ELV11111111 05.07 16.40 ME2",
+                                       amount="-9,12")
         payment_pizza_venezia = Payment(receiver_or_sender_name="11111 Pizza Venezia", date="05.07.19",
                 usage="SVWZ+2019-07-04T12.09 Debitk.1 2020-10ABWA+11111 Pizza Venezia//BERLIN/DE", amount="-7,45")
         payment_a_b = Payment(receiver_or_sender_name="1271 A&B.BERLIN", date="14.06.19",
@@ -39,6 +42,7 @@ class FinanCSVTest(unittest.TestCase):
 
         self._receiver_or_sender_list[1].payments.append(payment_supermarkt)
         self._receiver_or_sender_list[0].payments.append(payment_drogeriemann)
+        self._receiver_or_sender_list[0].payments.append(payment_drm)
         self._receiver_or_sender_list[2].payments.append(payment_pizza_venezia)
         self._receiver_or_sender_list[3].payments.append(payment_a_b)
         self._receiver_or_sender_list[4].payments.append(payment_gucksi)
