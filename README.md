@@ -12,5 +12,7 @@ Work in progress.
 
 ## TODO
 
+* Refactoring
+* Support other formats
 * Visualization
 * Some kind of AI interpreting the payments
