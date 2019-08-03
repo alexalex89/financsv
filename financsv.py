@@ -1,5 +1,5 @@
 import csv
-import optparse
+import argparse
 import yaml
 
 from itertools import groupby
@@ -55,14 +55,14 @@ def create_tree(receiver_list: list, category: Category = None) -> List[Receiver
 
 
 if __name__ == "__main__":
-    parser = optparse.OptionParser()
-    parser.add_option("-i", "--input", dest="input", help="Path to CSV file from the bank containing payment data", type="string")
-    parser.add_option("-r", "--receivers", dest="receivers", help=".yml file containing grouping of receivers", type="string")
-    parser.add_option("-o", "--only-outgoing", dest="only_outgoing", help="Only consider outgoing payments for overview", default=False, action="store_true")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--input", dest="input", help="Path to CSV file from the bank containing payment data", type=str)
+    parser.add_argument("-r", "--receivers", dest="receivers", help=".yml file containing grouping of receivers", type=str)
+    parser.add_argument("-o", "--only-outgoing", dest="only_outgoing", help="Only consider outgoing payments for overview", default=False, action="store_true")
 
-    options, _ = parser.parse_args()
+    args = parser.parse_args()
 
-    result = eval_payments(input_filename=options.input, receivers_filename=options.receivers)
+    result = eval_payments(input_filename=args.input, receivers_filename=args.receivers)
 
     for element in groupby(result, lambda x: x.category):
-        print(f"{element[0]}, Sum: {sum(subel.get_sum(only_outgoing=options.only_outgoing) for subel in element[1]):.2f}")
+        print(f"{element[0]}, Sum: {sum(subel.get_sum(only_outgoing=args.only_outgoing) for subel in element[1]):.2f}")

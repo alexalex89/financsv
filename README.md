@@ -12,6 +12,5 @@ Work in progress.
 
 ## TODO
 
-* Refactoring
 * Visualization
 * Some kind of AI interpreting the payments

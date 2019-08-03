@@ -1,6 +1,7 @@
 import unittest
 import financsv
 import yaml
+import subprocess
 
 from internal.receiver_sender import Category, ReceiverOrSender, Payment
 
@@ -48,6 +49,16 @@ class FinanCSVTest(unittest.TestCase):
         self._receiver_or_sender_list[4].payments.append(payment_gucksi)
 
         self.assertEqual(self._receiver_or_sender_list, financsv.eval_payments(input_filename="umsaetze.csv", receivers_filename="receivers.yml"))
+
+    def test_command_line(self):
+        process_result = subprocess.run(["python3.7", "../financsv.py", "-i", "umsaetze.csv", "-r", "receivers.yml"],
+                                        capture_output=True)
+        expected = (b"Unmatched (Total 1): [('KLAUWELT', 1)]\nCategory: Lebenshaltung/Drogerie,"
+ b' Sum: -18.24\nCategory: Lebenshaltung/Lebensmittel, Sum: -0.89\nCategory: '
+ b'Lebenshaltung/Lebensmittel/FastFood/Restaurant, Sum: -7.45\nCategory: Leb'
+ b'enshaltung/Kleidung, Sum: -115.02\n')
+        self.assertEqual(expected, process_result.stdout)
+        self.assertEqual(0, process_result.returncode)
 
     def test_create_tree(self):
         with open("receivers.yml") as f_receivers:
